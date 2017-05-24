@@ -98,9 +98,32 @@
                         <span class="glyphicon glyphicon-calendar"></span>
                         </span>
                     </div></br>
-                <!-- <input type="button" id="eventdetail" class="btn square btn-primary btn-sm" value="submit" > -->
                 </form>
             </div>
+            <!-- Event Update dialog strats -->
+                <div id="eventUpdateDialog" title="Update Event">
+                <form class="form updateEventBox" style="display:none">
+                    <div class="form-group mx-sm-3">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="updatedTitle" placeholder="Event title">
+                    </div>
+                    <label>Start Time</label>
+                    <div class='input-group date' id='updated_datetimepicker1'>    
+                        <input type='text' class="form-control" id="updated_startDateTime" />
+                        <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div></br>
+                    <label>End DateTime</label>
+                    <div class='input-group date' id='updated_datetimepicker2'>    
+                        <input type='text' class="form-control" id="updated_endDateTime" />
+                        <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div></br>
+                </form>
+            </div>
+            <!-- Event Update dialog ends-->
 
             <div class="row calendar_body">
                 <div id='calendar'></div>

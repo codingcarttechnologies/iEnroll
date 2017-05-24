@@ -14,16 +14,12 @@ $(document).ready(function() {
             success: cb_func,
             error: function(request, error) {
                 console('error');
-                // console.log(request, error);
+                
             }
         });
     }
 
     
-
-
-
-
     // Fullcalendar 
     
     $('#calendar').fullCalendar({
@@ -33,9 +29,7 @@ $(document).ready(function() {
             right: 'month,agendaWeek,agendaDay,list'
         },
 
-        // navLinkDayClick: function(weekStart, jsEvent) {
-        //     $('#calendar').fullCalendar('changeView', 'agendaDay');
-        // },
+       
         validRange: function(nowDate) {
             var moment = $('#calendar').fullCalendar('getDate');
             return {
@@ -46,22 +40,19 @@ $(document).ready(function() {
         selectable: true,
         selectHelper: true,
 
-        select: function(start, end, allDay) {
-            var startDate = start.format('YYYY-MM-DD').toString();             
+        select: function(start, end, allDay) {                    
             $('.eventDetailBox').show();
             $('#datetimepicker1').datetimepicker({
                 startView:1,
-                startDate:startDate
+                todayBtn:true,
+                startDate:moment().format('YYYY-MM-DD')
                 });
 
             $('#datetimepicker2').datetimepicker({
                 startView:1,
-                startDate:startDate
+                todayBtn:true,
+                startDate:moment().format('YYYY-MM-DD')
             });
-            $('#datetimepicker1').datetimepicker('setStartDate', startDate);
-            $('#datetimepicker2').datetimepicker('setStartDate', startDate);
-            $('#datetimepicker1').datetimepicker('update');
-            $('#datetimepicker2').datetimepicker('update');
             $( "#dialog" ).dialog({    
                 dialogClass: "no-close",
                 responsive: true,
@@ -107,9 +98,10 @@ $(document).ready(function() {
             });           
             $('#calendar').fullCalendar('unselect');
         },
-        editable:false,
+        editable:true,
         eventLimit: true, // allow "more" link when too many events
         events: function(start, end, timezone, callback) {
+
 
            
             var id = $('#user_id').val();
@@ -120,6 +112,87 @@ $(document).ready(function() {
 
         },
         timeFormat: '(h:mm)t',
+        eventClick:function( event, jsEvent, view ) { 
+            $('.updateEventBox').show();
+            $('#updated_startDateTime').val(event.start._i);
+            $('#updated_endDateTime').val(event.end._i);
+            $('#updatedTitle').val(event.title);             
+            $('#updated_datetimepicker1').datetimepicker({
+                startView:1,
+                todayBtn:true,
+                startDate:moment().format('YYYY-MM-DD')
+                });
+
+            $('#updated_datetimepicker2').datetimepicker({
+                startView:1,
+                todayBtn:true,
+                startDate:moment().format('YYYY-MM-DD')
+            });
+            $( "#eventUpdateDialog" ).dialog({    
+                dialogClass: "no-close",
+                responsive: true,
+                minWidth:350,
+                position:{ my: "top", at: "top", of: window },
+                buttons: {
+                    "Update": function() {
+                        var start = $('#updated_startDateTime').val();
+                        var end = $('#updated_endDateTime').val();
+                        var title = $('#updatedTitle').val();
+                        if(start == null || start == undefined || start == "" || 
+                            end ==  null || end == undefined || end == "" ||
+                            title == null || title == undefined || title == ""){
+                            alert( 'fill all details');
+                        }
+                        else{
+                            $( this ).dialog( "close" );
+                            params = {'start':start,'end':end,'title':title,'event_id':event._id }
+                            console.log('params',params)
+                            var eventData;
+                            eventData = {
+                                title: title,
+                                start: start,
+                                end: end,
+                                allDay:false
+                            };
+                            $.ajax({
+                                url: '/update-event/',
+                                dataType: 'json',
+                                type: "POST",
+                                data: JSON.stringify(params),
+                                success: function(resp) {
+                                    window.location.reload();
+                                }
+
+                            });
+                        }
+
+                    },
+                    "Delete": function() {
+                        var delete_flag = confirm("Are you sure you want to delete?");
+                        if (delete_flag == true) {
+                            $( this ).dialog( "close" );
+                            params = {'event_id':event._id}
+                            $.ajax({
+                                url: '/delete-event/',
+                                dataType: 'json',
+                                type: "POST",
+                                data: JSON.stringify(params),
+                                success: function(resp) {
+                                    window.location.reload();
+                                    
+
+                                }
+
+                            });
+                            
+                        }
+                    },
+                    "Close": function() {
+                        $(this).dialog('close')
+                    }
+                }      
+        });
+        }
          // can click day/week names to navigate views
 
         // eventDrop: function(event, delta, revertFunc) {

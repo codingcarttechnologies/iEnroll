@@ -192,16 +192,31 @@ def updateEvent(request):
 	try:
 		if request.method == 'POST':
 			data_dict = json.loads(request.body)
-			start = data_dict['start'].encode('utf-8')
-			end = data_dict['end'].encode('utf-8')
-			title = data_dict['title'].encode('utf-8')
-			event_id = data_dict['id']
-			print 'event_id',type(event_id)
-			UserEvents.objects.filter(id=event_id).update(title=title,
+			print 'data_dict',data_dict
+			start = data_dict['start']
+			end = data_dict['end']
+			title = data_dict['title']
+			event_id = data_dict['event_id']
+			UserEvents.objects.filter(pk=event_id).filter(user=request.user).update(title=title,
 				start_date=start,end_date=end)
-			return HttpResponse('success')
+			return JsonResponse({'status':'success'})
 	except Exception as e:
 		print 'error',e
+
+
+# Delete event
+@csrf_exempt
+def deleteEvent(request):
+	try:
+		if request.method == 'POST':
+			data_dict = json.loads(request.body)
+			print 'data_dict',data_dict
+			event_id = data_dict['event_id']
+			UserEvents.objects.filter(pk=event_id).delete()
+			return JsonResponse({'status':'success'})
+	except Exception as e:
+		print 'error',e
+
 
 #Get Chart Data
 @csrf_exempt

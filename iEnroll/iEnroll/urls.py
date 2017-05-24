@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^updateUser/$', views.updateUser, name='updateUser'),
     url(r'^addUser/$', views.addUser, name='addUser'),
     url(r'^create-event/$', views.creatEvent, name='creatEvent'),
+    url(r'^delete-event/$', views.deleteEvent, name='deleteEvent'),
     url(r'^get-events/$', views.getEvents, name='getEvents'),
     url(r'^update-event/$', views.updateEvent, name='updateEvent'),
     url(r'^get-chartdata/$', views.getChartData, name='getChartData'),
