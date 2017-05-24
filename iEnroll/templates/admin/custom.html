@@ -1,0 +1,244 @@
+{% load static %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% block css %}
+<link href="{% static 'css/fullcalendar.min.css' %}" rel='stylesheet' />
+<link href="{% static 'css/fullcalendar.print.min.css' %}" rel='stylesheet' media='print' />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<link href="{% static 'css/bootstrap-datetimepicker.min.css' %}" rel='stylesheet' />
+<link href="{% static 'css/calendar_inline.css' %}" rel='stylesheet' /> {% endblock %} {% block navbar %}
+<nav class="navbar navbar-inverse" style="background-color: #2a5396;">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href=""><img src="https://2.bp.blogspot.com/-BX5HX0EdDZ8/WQByZy1JFxI/AAAAAAAABnM/wIo1-ZQiHEE3vGQcweI_4yfrA3ljRpVcACLcB/s1600/newaiEnroll_login-copy.png" style="height:35px;width:180px;margin-top:-5px;" /></a>
+        </div>
+        <ul class="nav navbar-nav navbar-right ">
+            <li><a href="" style="color: white;">Welcome,{{ user}}!</a></li>
+            <input type="hidden" id="user_id" value="{{ request.user.id }}">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img id="user_img" style="height:25px;width:30px;" src="https://it-agents.pl/wp-content/uploads/2015/03/it.png" />
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="">Profile</a></li>
+                    <li><a href="">Settings</a></li>
+                    <li><a href="/logout/">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %} {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="row">
+                <!-- <button class="btn btn-success" id="addNewUser">Add New <span class="glyphicon glyphicon-plus"></span></button> -->
+                <button class="btn btn-success toos_button" disabled style="margin-left: 550px;">Tools <span class="glyphicon glyphicon-collapse-down"></span></button>
+                <br>
+                <br>
+            </div>
+            <!-- Table starts -->
+            <div class="rows">
+                <div class="left_panel" style="border:10px!solid;border-color: red;">
+                    <table id="example" class="display" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Status</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users_data %}
+                            <tr>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.last_name }}</td>
+                                <td>{{ user.status }}</td>
+                                <td>
+                                    <button class="btn btn-info edit_user" data-id="{{ user.id }}" data-fname="{{ user.first_name }}" data-lname="{{ user.last_name}}" data-status="{{ user.status }}">Edit</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger delete_user" data-id="{{ user.id }}">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!--ends here-->
+                </div>
+            </div>
+            <!-- Table Ends -->
+        </div>
+        <div class="col-md-5">
+            <div id="dialog" title="Add Event Date and Time">
+                <form class="form eventDetailBox" style="display:none">
+                    <div class="form-group mx-sm-3">
+                        <label>Title</label>
+                        <input type="text" class="form-control" id="eventTitle" placeholder="Event title">
+                    </div>
+                    <label>Start Time</label>
+                    <div class='input-group date' id='datetimepicker1'>    
+                        <input type='text' class="form-control" id="startTime" />
+                        <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div></br>
+                    <label>End DateTime</label>
+                    <div class='input-group date' id='datetimepicker2'>    
+                        <input type='text' class="form-control" id="endDateTime" />
+                        <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div></br>
+                <!-- <input type="button" id="eventdetail" class="btn square btn-primary btn-sm" value="submit" > -->
+                </form>
+            </div>
+
+            <div class="row calendar_body">
+                <div id='calendar'></div>
+            </div>
+            <br>
+            <div class="row">
+                <label>Today's contacts</label>
+                {% if today_contacts %}
+                {% for contact in today_contacts %}
+                    <div class="alert alert-info" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>{{ contact.first_name}} {{ contact.last_name }}</strong> meeting scheduled at {{ contact.time_to_reach }}.
+                    </div>                  
+                {% endfor %}
+                {% else %}
+                    <div class="alert alert-info" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>No contacts for today.</strong> 
+                    </div> 
+                {% endif %}
+                <label>Pending contacts for  last seven days</label>
+                {% if pending_contacts %}
+                    {% for contact in pending_contacts %}
+                    <div class="alert alert-danger" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>{{ contact.first_name}} {{ contact.last_name }}</strong> meeting scheduled on {{ contact.scheduled_date }}at {{ contact.time_to_reach }}.
+                    </div> 
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>No pending leads.</strong>
+                    </div> 
+                {% endif %}
+            </div>
+            <div class="row">
+                <div id="chartContainer" style="height: 300px; width: 100%;">
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<!-- Edit Modal -->
+<div id="editModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit User</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control names" id="edit_fname" placeholder="first Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control names" id="edit_lname" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" class="form-control status" id="edit_status" placeholder="Status">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="confirm_edit">Submit</button>
+                </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Modal add new user starts -->
+<div id="AddUserModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add User</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control names" id="add_fname" placeholder="first Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control names" id="add_lname" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" class="form-control status" id="add_status" placeholder="Status">
+                    </div>
+                   
+                    <button type="button" class="btn btn-primary" id="confirm_add">Submit</button>
+                </form>
+
+             
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Modal add new user ends -->
+{% endblock %} {% block js %}
+<script src="{% static 'js/moment.min.js' %}"></script>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static 'js/fullcalendar.min.js' %}"></script>
+<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+<script type="text/javascript" src="{% static '/js/bootstrap-datetimepicker.js' %}" charset="UTF-8"></script>
+<script src="{% static 'js/calendar_inline.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/dashboard.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/chart.js'%}"></script>
+{% endblock %}
+

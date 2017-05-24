@@ -1,0 +1,46 @@
+{% extends './base_first.html' %}
+
+{% block title %}
+Summary
+{% endblock title %}
+
+{% load static %}
+
+{% block content %}
+
+<center>
+  <h3>Summary of ACME_T2D Contacts</h3>
+</center>
+
+<p><br></p>
+
+{% if status_list %}
+<center>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-condensed">
+      <caption></caption>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <div class="row">
+          {% for status in status_list %}
+          <tr>
+            <td> {{ status.status }} </td>
+            <td> {{ status.status_cnt }}</td>
+          </tr>
+          {% endfor %}
+        </div> <!-- row -->
+      </tbody>
+    </table>
+  </div> <!-- table -->
+</center>
+
+{% else %}
+<p>Could not find status summary</p>
+{% endif %}
+
+{% endblock content %}

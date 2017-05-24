@@ -1,0 +1,31 @@
+{% load i18n staticfiles %} {% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'css/customLogin.css' %}" /> {% endblock %} {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-md-offset-4">
+            <div class="account-wall">
+                <img class="logo-img" style="height:50px;width:300px;margin-left: 20px;" src="https://3.bp.blogspot.com/-h74i9A_3LjU/WQBgZIhsOhI/AAAAAAAABm8/E9kmHLGqYWwaPw5xxyp3niscK4lkzgfdgCLcB/s1600/nloguiEnroll_login%2Bcopy.png" alt="">
+                <form class="form-signin">
+                    <span id="loading_msg" style="display: none;color: green">Please wait.....</span>
+                    <span id="empty_error" style="display: none;color: red">Please fill all the fields</span>
+                    <span id="cred_error" style="display: none;color: red">Wrong credentials</span>
+                    <br>
+                    <input type="text" class="form-control" id="username" placeholder="username" required autofocus>
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                    <br>
+                    <br>
+                    <input type="button" class="btn btn-primary btn btn-lg btn-primary btn-block" id="login_button" value="Login" />
+                    <a href="" style="color:grey"><span>Forgot Password</span></a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block js%}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{% static 'js/login.js' %}"></script>
+{% endblock %}

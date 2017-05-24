@@ -1,0 +1,180 @@
+{% load i18n static %}
+{% block css %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+{% endblock %}
+{% block navbar %}
+
+<nav class="navbar navbar-inverse" style="background-color: #2a5396;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href=""><img src="https://2.bp.blogspot.com/-BX5HX0EdDZ8/WQByZy1JFxI/AAAAAAAABnM/wIo1-ZQiHEE3vGQcweI_4yfrA3ljRpVcACLcB/s1600/newaiEnroll_login-copy.png" style="height:35px;width:180px;margin-top:-5px;"/></a>
+    </div>
+    <ul class="nav navbar-nav navbar-right ">
+        <li><a href="" style="color: white;">Welcome,{{ user}}!</a></li>
+         <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <img id="user_img" style="height:25px;width:30px;" src="https://it-agents.pl/wp-content/uploads/2015/03/it.png"/>
+            <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+            <li><a href="">Profile</a></li>
+            <li><a href="">Settings</a></li>
+            <li><a href="/logout/">Logout</a></li>
+            </ul>
+        </li>            
+    </ul>
+  </div>
+</nav>
+  
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+<button class="btn btn-success" id="addNewUser" >Add New <span class="glyphicon glyphicon-plus"></span></button>
+<button class="btn btn-success toos_button" disabled style="margin-left: 550px;">Tools  <span class="glyphicon glyphicon-collapse-down"></span></button><br><br>
+  <div class="row">
+    <div class="col-md-8" class="left_panel" style="border:10px!solid;border-color: red;">
+    	<table id="example" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Status</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users_data %}
+            <tr>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.status }}</td>
+                <td><button class="btn btn-info edit_user" data-id="{{ user.id }}" data-fname="{{ user.first_name }}" 
+                data-lname="{{ user.last_name}}" data-status="{{ user.status }}">Edit</button></td>
+                <td><button class="btn btn-danger delete_user" data-id="{{ user.id }}">Delete</button></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+   		</table>
+	<!--ends here-->
+    </div>
+     <div class="col-md-4">
+    	<div class="row">
+    		<p>Calendar</p>
+    		<iframe src="https://calendar.google.com/calendar/embed?src=pqo7pfhb48rnhh5c4kidqlukgc%40group.calendar.google.com&ctz=Asia/Calcutta" style="border: 0" width="450" height="400" frameborder="0" scrolling="no"></iframe>
+    	</div><br>
+    	<div class="row">
+    		<p>Notifications</p>
+    		<div class="container">
+    			<div class="row messages1" style="background-color:lightblue; height: 60px;width: 450px">
+    				<img class="" src="http://www.advogar.pt/wp-content/uploads/2014/04/Mail-at-icon.png?w=1400" style="margin-top: 10px;margin-left: 10px; height:40px;width:40px;"></img> <a>jonathan smith</a>
+    				<span>sends you a mail</span><span class="time1" style="margin-left:120px;"> 1 min ago</span>
+    			</div><br>
+    			<div class="row messages2" style="background-color:lightpink; height: 60px;width: 450px">
+    				<img class="" src="https://cdn4.iconfinder.com/data/icons/miu-gloss-social/60/facebook-512.png" style="margin-top: 10px;margin-left: 10px; height:40px;width:40px;"></img> <a>jonathan smith</a>
+    				<span>mentioned you in a post</span><span class="time2" style="margin-left:78px;"> 1 min ago</span>
+    			</div><br>
+    			<div class="row messages3" style="background-color:lightgreen; height: 60px;width: 450px">
+    				<img class="" src="https://cdn3.iconfinder.com/data/icons/social-media-chat-1/512/WeChat-512.png" style="margin-top: 10px;margin-left: 10px; height:40px;width:40px;"></img><a>jonathan smith</a>
+    				<span>You have 5 unread messages</span><span class="time3" style="margin-left:45px;"> 1 min ago</span>
+    			</div><br>
+    		</div>
+    	</div>
+    	<div class="row">
+    	<p>Area Chart</p>
+    		<div id="chartContainer" style="height: 300px; width: 100%;">
+    	</div>
+    </div>
+  </div>
+
+</div>
+</div>
+<!-- Edit Modal -->
+<div id="editModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit User</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                    	<label>First Name</label>
+                        <input type="text" class="form-control names" id="edit_fname" placeholder="first Name">
+                    </div>
+                    <div class="form-group">
+                    	<label>Last Name</label>
+                        <input type="text" class="form-control names" id="edit_lname" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                    	<label>Status</label>
+                        <input type="text" class="form-control status" id="edit_status" placeholder="Status">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="confirm_edit">Submit</button>
+                </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Modal add new user starts -->
+<div id="AddUserModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add User</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control names" id="add_fname" placeholder="first Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control names" id="add_lname" placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" class="form-control status" id="add_status" placeholder="Status">
+                    </div>
+                   
+                    <button type="button" class="btn btn-primary" id="confirm_add">Submit</button>
+                </form>
+
+             
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Modal add new user ends -->
+{% endblock %}
+{% block js%}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+<script src="https://npmcdn.com/bootstrap@4.0.0-alpha.5/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+<script type="text/javascript" src="{% static 'js/dashboard.js'%}"></script>
+{% endblock %}

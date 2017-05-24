@@ -1,0 +1,46 @@
+{% load staticfiles %}
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> {% block title %}(--No title--){% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href= "{% static 'contacts/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <style>
+      body {
+      margin-top: 50px;
+      margin-bottom: 50px;
+      background: none;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div>
+      <nav class="navbar navbar-default navbar-static-tp" role="navigation">
+        <div class="navbar-header">
+          <a class="navbar-brand" href= "{% url 'contacts:index' %}">iEnroll</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="{% url 'contacts:index' %}">Home</a></li>
+            <li><a href="{% url 'contacts:about' %}">About</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="nav navbar-nav"><a href="#">Login</a>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class = "wrapper">
+      <div class = "content-main">
+        {% block content %}
+        (--No content--)
+        {% endblock content %}
+      </div> <!-- content-main -->
+    </div>   <!-- wrapper -->
+
+  </body>
+</html>

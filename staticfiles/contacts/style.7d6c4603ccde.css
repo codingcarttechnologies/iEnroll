@@ -1,0 +1,18 @@
+/* style.css
+   David R. McWilliams <dave@ienroll.com
+   14-Feb-2017 Initiate
+*/
+
+/* from getbootstrap.com home page */
+/* Did not apparently do anything 15-Mar-2017 */
+
+.wrapper {
+  .make-row();
+}
+.content-main {
+  .make-lg-column(8);
+}
+.content-secondary {
+  .make-lg-column(3);
+  .make-lg-column-offset(1);
+}
