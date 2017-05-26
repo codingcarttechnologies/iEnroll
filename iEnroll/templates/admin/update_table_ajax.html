@@ -1,0 +1,32 @@
+{% load static %}
+<table id="example" class="row-border compact stripe hover cell-border">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Tracking</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody id="table_body">
+        {% for user in users_data %}
+        <tr>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.status }}</td>
+            <td>{{ user.tracking }}</td>
+            <td>
+                <button class="btn btn-info edit_user" data-id="{{ user.id }}" data-fname="{{ user.first_name }}" data-lname="{{ user.last_name}}" data-status="{{ user.status }}" data-tracking="{{ user.tracking }}" data-email="{{ user.email }}">Edit</button>
+            </td>
+            <td>
+                <button class="btn btn-danger delete_user" data-id="{{ user.id }}">Delete</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script type="text/javascript" src="{% static 'js/dashboard.js'%}"></script>

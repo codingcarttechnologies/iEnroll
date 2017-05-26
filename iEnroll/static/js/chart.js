@@ -1,89 +1,38 @@
-$(document).ready(function() {
-
-    var leads_fialed_screeing = [];
-    var leads_by_ienroll = [];
-    var leads_enrolled_successfully = [];
+window.onload = function () {
+    var chart_data = [];
     $.getJSON("/get-chartdata/", function(data) {
-        // retreive leads_fialed_screeing
-        $.each(data['leads_fialed_screeing'], function(index, value) {
-            leads_fialed_screeing.push({
-                x: new Date(value['date']),
-                y: value['value']
+        $.each(data['chartData'], function(index, value) {
+            chart_data.push({
+                label: value['category'],
+                y: value['count']
             });
         });
-        // retreive leads_fialed_screeing
-        $.each(data['leads_by_ienroll'], function(index, value) {
-            leads_by_ienroll.push({
-                x: new Date(value['date']),
-                y: value['value']
-            });
-        });
-        // retreive leads_enrolled_successfully
-        $.each(data['leads_enrolled_successfully'], function(index, value) {
-            leads_enrolled_successfully.push({
-                x: new Date(value['date']),
-                y: value['value']
-            });
-        });
-        var chart = new CanvasJS.Chart("chartContainer", {
-            title: {
-                text: "Chart"
-            },
-            animationEnabled: true,
-            axisX: {
-                title: 'date',
-                // intervalType: "month",
+  
+    var chart = new CanvasJS.Chart("chartContainer",
+    {
+      title:{
+        text: " Category vs Leads"    
+      },
+      animationEnabled: true,
+      axisY: {
+        title: "Number of leads"
+      },
+      axisX: {
+        title: "Category"
+      },
+      theme: "theme2",
+      dataPointMaxWidth: 30,
+      data: [
 
-            },
-            axisY: {
-                title: "Number of Leads",
-            },
-            legend: {
-                verticalAlign: "bottom",
-                horizontalAlign: "center"
-            },
-            legend: {
-                cursor: "pointer",
-                itemclick: function(e) {
-                    //console.log("legend click: " + e.dataPointIndex);
-                    //console.log(e);
-                    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                        e.dataSeries.visible = false;
-                    } else {
-                        e.dataSeries.visible = true;
-                    }
-
-                    e.chart.render();
-                }
-            },
-            data: [{
-                name: "leads sent by iEnroll;",
-                showInLegend: true,
-                legendMarkerType: "square",
-                type: "line",
-                dataPoints: leads_by_ienroll,
-
-            }, {
-                name: " of leads failed screening",
-                showInLegend: true,
-                legendMarkerType: "square",
-                type: "line",
-                dataPoints: leads_fialed_screeing,
-
-            }, {
-                name: " leads successfully enrolled",
-                showInLegend: true,
-                legendMarkerType: "square",
-                type: "line",
-                dataPoints: leads_enrolled_successfully,
-
-            }]
-        });
-
-        chart.render();
-
-
-
+          {        
+            type: "column",  
+            dataPoints : chart_data
+           }   
+        ]
     });
 
-});
+    chart.render();
+
+     });
+  }    
+     

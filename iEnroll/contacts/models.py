@@ -136,6 +136,14 @@ class ACME_T2D(models.Model):
                                        ('too_far', 'Not Interested, Too Far'),
                                        ('placebo', 'Not Intereseted, Placebo'),
                                        ('enrolled', 'Enrolled')))
+    tracking = models.CharField(max_length=25, default='new_lead',
+                              choices=(('new_lead', 'New lead'),
+                                       ('not_reached_attempt1', 'Not reached attempt 1'),
+                                       ('not_reached_attempt2', 'Not reached attempt 2'),
+                                       ('verbally_pre-screened',  'Verbally Pre-screened'),
+                                       ('scheduled_clinic_visit', 'Scheduled Clinic Visit'),
+                                       ('screened_in_clinic', 'Screened in clinic')))
+                                       
     accepted = models.BooleanField(default=False)
 
     def __str__(self):

@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
 <link href="{% static 'css/bootstrap-datetimepicker.min.css' %}" rel='stylesheet' />
 <link href="{% static 'css/calendar_inline.css' %}" rel='stylesheet' /> {% endblock %} {% block navbar %}
 <nav class="navbar navbar-inverse" style="background-color: #2a5396;">
@@ -34,9 +34,9 @@
     </div>
 </nav>
 {% endblock %} {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-8 ">
             <div class="row">
                 <!-- <button class="btn btn-success" id="addNewUser">Add New <span class="glyphicon glyphicon-plus"></span></button> -->
                 <button class="btn btn-success toos_button" disabled style="margin-left: 550px;">Tools <span class="glyphicon glyphicon-collapse-down"></span></button>
@@ -45,25 +45,29 @@
             </div>
             <!-- Table starts -->
             <div class="rows">
-                <div class="left_panel" style="border:10px!solid;border-color: red;">
-                    <table id="example" class="display" cellspacing="0" width="100%">
+                <div class="left_panel ajax_table" style="border:10px!solid;border-color: red;">
+                    <table id="example" class="row-border compact stripe hover cell-border">
                         <thead>
                             <tr>
                                 <th>First Name</th>
                                 <th>Last Name</th>
+                                <th>Email</th>
                                 <th>Status</th>
+                                <th>Tracking</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="table_body">
                             {% for user in users_data %}
                             <tr>
                                 <td>{{ user.first_name }}</td>
                                 <td>{{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
                                 <td>{{ user.status }}</td>
+                                <td>{{ user.tracking }}</td>
                                 <td>
-                                    <button class="btn btn-info edit_user" data-id="{{ user.id }}" data-fname="{{ user.first_name }}" data-lname="{{ user.last_name}}" data-status="{{ user.status }}">Edit</button>
+                                    <button class="btn btn-info edit_user" data-id="{{ user.id }}" data-fname="{{ user.first_name }}" data-lname="{{ user.last_name}}" data-status="{{ user.status }}" data-tracking="{{ user.tracking }}" data-email="{{ user.email }}">Edit</button>
                                 </td>
                                 <td>
                                     <button class="btn btn-danger delete_user" data-id="{{ user.id }}">Delete</button>
@@ -77,7 +81,7 @@
             </div>
             <!-- Table Ends -->
         </div>
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div id="dialog" title="Add Event Date and Time">
                 <form class="form eventDetailBox" style="display:none">
                     <div class="form-group mx-sm-3">
@@ -98,6 +102,7 @@
                         <span class="glyphicon glyphicon-calendar"></span>
                         </span>
                     </div></br>
+                <!-- <input type="button" id="eventdetail" class="btn square btn-primary btn-sm" value="submit" > -->
                 </form>
             </div>
             <!-- Event Update dialog strats -->
@@ -197,14 +202,36 @@
                         <input type="text" class="form-control names" id="edit_lname" placeholder="Last Name">
                     </div>
                     <div class="form-group">
-                        <label>Status</label>
-                        <input type="text" class="form-control status" id="edit_status" placeholder="Status">
+                        <label>Email</label>
+                        <input type="email" class="form-control" id="edit_email" placeholder="Email">
                     </div>
-                    <button type="button" class="btn btn-primary" id="confirm_edit">Submit</button>
+                    <div class="form-group">
+                        <label>Status</label><br>
+                        <select class="selectpicker" id="edit_status">
+                          <option value="pending">Pending</option>
+                          <option value="no_response">No Response</option>
+                          <option value="failed_verbal_pre_screeing">Failed Verbal Pre-Screening</option>
+                          <option value="failed_clinic_screeing">Failed Clinic Screening</option>
+                          <option value="declined">Declined</option>
+                          <option value="enrolled">Enrolled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tracking</label><br>
+                        <select class="selectpicker" id="edit_tracking">
+                          <option value="new_lead">New lead</option>
+                          <option value="not_reached_attempt1">Not reached attempt 1</option>
+                          <option value="not_reached_attempt2">Not reached attempt 2</option>
+                          <option value="verbally_pre-screened">Verbally Pre-screened</option>
+                          <option value="scheduled_clinic_visit">Scheduled Clinic Visit</option>
+                          <option value="screened_in_clinic">Screened in clinic</option>
+                        </select>
+                    </div>    
                 </form>
         </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="confirm_edit">Submit</button>
         <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -260,6 +287,7 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
 <script type="text/javascript" src="{% static '/js/bootstrap-datetimepicker.js' %}" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 <script src="{% static 'js/calendar_inline.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/dashboard.js'%}"></script>
 <script type="text/javascript" src="{% static 'js/chart.js'%}"></script>

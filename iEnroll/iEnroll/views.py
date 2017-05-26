@@ -65,12 +65,7 @@ def adminDashboard(request):
 		pending_contacts_list=[]
 		today_date = datetime.date.today()
 		weekago_date = datetime.date.today()+timedelta(-7)
-		print'dates',today_date,weekago_date
-		# pending_contacts_list = []
-		# today = datetime.date.today()
-		# week_ago = today - datetime.timedelta(days=7)
-		# print'>>',today,week_ago
-		users_dict={'id':'','first_name':'','last_name':'','status':''} 
+		users_dict={'id':'','first_name':'','last_name':'','status':'','tracking':'','email':''} 
 		today_contacts_dict =  {'id':'','first_name':'','last_name':'','time_to_reach' : ''} 
 		pending_contacts_dict =  {'id':'','first_name':'','last_name':'','time_to_reach' : '','scheduled_date':''} 	
 		if (request.user.id != None):	
@@ -87,7 +82,9 @@ def adminDashboard(request):
 				users_dict['id']=user.id
 				users_dict["first_name"] = user.fname
 				users_dict["last_name"] = user.lname
+				users_dict["email"] = user.contact_email
 				users_dict["status"] = user.status
+				users_dict["tracking"] = user.tracking
 				users_list.append(users_dict.copy())
 			today_contacts = ACME_T2D.objects.filter(contact_date = today_date) 
 			for contacts in today_contacts:
@@ -96,7 +93,6 @@ def adminDashboard(request):
 				today_contacts_dict["last_name"] = contacts.lname
 				today_contacts_dict["time_to_reach"] = contacts.time_to_reach
 				today_contacts_list.append(today_contacts_dict.copy())
-			print 'today_contacts_list',today_contacts_list
 			return render(request,'admin/custom.html',{'user':request.user,'users_data':users_list,
 				'pending_contacts':pending_contacts_list,'today_contacts':today_contacts_list})	
 		else:	
@@ -120,9 +116,10 @@ def deleteUser(request):
 def updateUser(request):	
 	try:
 		data_dict = json.loads(request.body)
+		print 'data_dict',data_dict
 		user_id = data_dict['user_id']
 		ACME_T2D.objects.filter(id=user_id).update(fname = data_dict['new_fname'],lname = data_dict['new_lname'],
-			status =data_dict['new_status'])
+			status =data_dict['new_status'],tracking=data_dict['new_tracking'],contact_email=data_dict['new_email'])
 		return HttpResponse("success")
 	except Exception as e:
 		print 'error',e
@@ -181,7 +178,6 @@ def getEvents(request):
 			response_dict['end']=obj.end_date.strftime("%Y-%m-%d %H:%M:%S")
 			response_list.append(response_dict.copy())
 		final_response['data']=	response_list
-		print 'response_list',response_list
 		return JsonResponse(final_response)
 	except Exception as e:
 		print 'error',e
@@ -210,7 +206,6 @@ def deleteEvent(request):
 	try:
 		if request.method == 'POST':
 			data_dict = json.loads(request.body)
-			print 'data_dict',data_dict
 			event_id = data_dict['event_id']
 			UserEvents.objects.filter(pk=event_id).delete()
 			return JsonResponse({'status':'success'})
@@ -222,60 +217,43 @@ def deleteEvent(request):
 @csrf_exempt
 def getChartData(request):
 	try:
-		print 'shashank'
-		today_date =datetime.date.today()
-		weekago_date=datetime.date.today()+timedelta(-7)
-		print 'today_date',today_date
-		print 'weekago_date',weekago_date
-		modal_object =  ACME_T2D.objects.filter(contact_date__range=(weekago_date,today_date))
-		print 'modal_object',modal_object
-		response_dict = {'leads_by_ienroll':'','leads_fialed_screeing':'',
-		'leads_enrolled_successfully':''}
-		failed_lead_list = []
-		lead_sentby_enroll_list = []
-		success_lead_list = []
-		start_date = datetime.datetime.now()+timedelta(-30)
-		end_date = datetime.datetime.now()
-		###########  Leads send by enroll through web form #############
-		obj = ACME_T2D.objects.filter(lead_type="web_form").filter(contact_date__range=(start_date,end_date))
-		if obj:
-			for date in obj:
-				lead_sentby_enroll_list.append(date.contact_date.strftime('%Y,%m,%d'))	
-			lead_sentby_enroll_dict = dict(Counter(lead_sentby_enroll_list))
-			lead_sentby_enroll_list = dict_object_creator(lead_sentby_enroll_dict)
-			response_dict['leads_by_ienroll']=lead_sentby_enroll_list
-		# ############ Failed Leads  #############
-		failed_lead = ACME_T2D.objects.filter(notes='fail_ienroll').filter(contact_date__range=(start_date,end_date))
-		if failed_lead:
-			for data in failed_lead:
-				failed_lead_list.append(data.contact_date.strftime('%Y,%m,%d'))
-			failed_lead_dict = dict(Counter(failed_lead_list))
-			failed_lead_list = dict_object_creator(failed_lead_dict)
-			response_dict['leads_fialed_screeing']=failed_lead_list
-		# ########## successfull lead  #################
-		success_lead = ACME_T2D.objects.filter(notes="enrolled").filter(contact_date__range=(start_date,end_date))
-		if success_lead:
-			for val in success_lead:
-				success_lead_list.append(val.contact_date.strftime('%Y,%m,%d'))
-			success_lead_dict = dict(Counter(success_lead_list))
-			success_lead_list = dict_object_creator(success_lead_dict)
-			response_dict['leads_enrolled_successfully']=success_lead_list
-		# print json.dumps(response_dict, sort_keys=True,indent=4, separators=(',', ': '))
-		return JsonResponse(response_dict)	
+		response_list =[]
+		response_dict = {'category':'','count':''}
+		web_form_leads = ACME_T2D.objects.filter(lead_type="web_form").count()
+		if web_form_leads:
+			response_dict['category']='web_form'
+			response_dict['count']=web_form_leads
+			response_list.append(response_dict.copy())
+		call_leads = ACME_T2D.objects.filter(lead_type="call").count()
+		if call_leads:
+				response_dict['category']='call'
+				response_dict['count']=call_leads
+				response_list.append(response_dict.copy())		
+		return JsonResponse({'chartData':response_list})					
 	except Exception as e:
 		print 'error',e				
 
 
-def dict_object_creator(input_dict):
+#Update table using ajax 
+@csrf_exempt
+def update_table_ajax(request):
 	try:
-		result = []
-		result_dict = {'date':'','value':''}
-		for key ,val in input_dict.items():
-			result_dict['date']=key
-			result_dict['value']=val
-			result.append(result_dict.copy())
-		return 	result
+		users_list=[]
+		users_dict={'id':'','first_name':'','last_name':'','status':'','tracking':'','email':''} 
+		if (request.user.id != None) and request.method == 'POST':
+			users = ACME_T2D.objects.all()
+			for user in users:
+				users_dict['id']=user.id
+				users_dict["first_name"] = user.fname
+				users_dict["last_name"] = user.lname
+				users_dict["status"] = user.status
+				users_dict["tracking"] = user.tracking
+				users_dict["email"] = user.contact_email
+				users_list.append(users_dict.copy())
+			html = render_to_string('admin/update_table_ajax.html', {'user':request.user,'users_data':users_list})		
+			return HttpResponse(html)
+		else:
+			return HttpResponseRedirect("/admin/")		
 	except Exception as e:
-		print 'error',e
-
+		print 'error',e    
 		

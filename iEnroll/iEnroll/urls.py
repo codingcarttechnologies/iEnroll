@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^get-events/$', views.getEvents, name='getEvents'),
     url(r'^update-event/$', views.updateEvent, name='updateEvent'),
     url(r'^get-chartdata/$', views.getChartData, name='getChartData'),
+    url(r'^update_table/$', views.update_table_ajax, name='update_table_ajax'),
 
 ]
 

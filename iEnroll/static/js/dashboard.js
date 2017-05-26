@@ -10,7 +10,6 @@ $('.delete_user').click(function(){
        params = {
             'user_id': user_id,
             }
-        console.log('params',params)
          $.ajax({
             type: "POST",
             url: "/deleteUser/",
@@ -18,7 +17,13 @@ $('.delete_user').click(function(){
             contentType: "application/json",
             success: function(res) {
                 if (res == 'success') {
-                    window.location.href='/dashboard/'
+                    $.ajax({
+                            url:'/update_table/',
+                            type:'POST',
+                            success:function(res){
+                                $('.ajax_table').html(res)
+                            }
+                        });
                 } else {
                     console.log('error')
                 }
@@ -32,17 +37,20 @@ $('.delete_user').click(function(){
     var new_lname = '';
     var new_status = '';
     var current_user = '';
+    var new_tracking ='';
+    var new_email = '';
     $('.edit_user').click(function(){
         $('#edit_fname').val($(this).attr('data-fname'));
         $('#edit_lname').val($(this).attr('data-lname'));
-        $('#edit_status').val($(this).attr('data-status'));
-        $('#editModal').modal('show');
+        $('#edit_email').val($(this).attr('data-email'));        
+        $('#editModal').modal('show');        
         new_fname = $('#edit_fname').val();
         new_lname = $('#edit_lname').val();
-        new_status = $('#edit_status').val();
+        new_email = $('#edit_email').val();
+        new_status = $(this).attr('data-status')
+        new_tracking = $(this).attr('data-tracking')
         current_user = $(this).attr('data-id')
     })
-
     /*Edit a user data*/
     $('#edit_fname').on('change',function(){
         new_fname = $('#edit_fname').val();
@@ -50,20 +58,28 @@ $('.delete_user').click(function(){
     $('#edit_lname').on('change',function(){
         new_lname = $('#edit_lname').val();
     })
-    $('#edit_status').on('change',function(){
-        new_status = $('#edit_status').val();
+    $('#edit_email').on('change',function(){
+        new_email = $('#edit_email').val();
     })
+    $('#edit_status').on('change', function(){
+        new_status = $( "#edit_status option:selected" ).val();
+    });
+    $('#edit_tracking').on('change', function(){
+        new_tracking = $( "#edit_tracking option:selected" ).val();
+    });
     $('#confirm_edit').click(function(){
 
-        console.log('here','new_fname',new_fname,'new_lname',new_lname,'new_status',new_status,'user',current_user)
-        if((new_fname != '') || (new_lname != '') || (new_status != '')){
+       
+        if((new_fname != '') || (new_lname != '') || (new_status != '') || (new_tracking != '') 
+            || (new_email != '') ){
             params = {
                 'user_id': current_user,
                 'new_fname':new_fname,
                 'new_lname':new_lname,
                 'new_status':new_status,
+                'new_tracking':new_tracking,
+                'new_email':new_email
                 }
-            console.log('params',params)
             $.ajax({
                 type: "POST",
                 url: "/updateUser/",
@@ -71,8 +87,14 @@ $('.delete_user').click(function(){
                 contentType: "application/json",
                 success: function(res) {
                     if (res == 'success') {
-                        console.log('success')
-                        window.location.href='/dashboard/'
+                        $('#editModal').modal('hide');        
+                        $.ajax({
+                            url:'/update_table/',
+                            type:'POST',
+                            success:function(res){
+                                $('.ajax_table').html(res)
+                            }
+                        })
                     } else {
                         console.log('error')
                     }
