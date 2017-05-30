@@ -1,5 +1,7 @@
 $(document).ready(function(){
-        $('#example').DataTable();
+        $('#example').DataTable({
+            responsive: true
+        });
     });
 
 /* Delete a record */
@@ -21,7 +23,17 @@ $('.delete_user').click(function(){
                             url:'/update_table/',
                             type:'POST',
                             success:function(res){
+                                $.toast({
+                                    heading: 'Success',
+                                    text: 'User has been deleted successfully.',
+                                    position: 'top-left',
+                                    stack: false,
+                                    icon:'success',
+                                    textColor:'white',
+                                    showHideTransition: 'fade',
+                                })
                                 $('.ajax_table').html(res)
+
                             }
                         });
                 } else {
@@ -68,17 +80,17 @@ $('.delete_user').click(function(){
         new_tracking = $( "#edit_tracking option:selected" ).val();
     });
     $('#confirm_edit').click(function(){
-
        
-        if((new_fname != '') || (new_lname != '') || (new_status != '') || (new_tracking != '') 
-            || (new_email != '') ){
+        if((new_fname == "") || (new_lname == "") || (new_email == "")){
+                $('.empty_fields').show().delay(2000).fadeOut();          
+        }else{
             params = {
-                'user_id': current_user,
-                'new_fname':new_fname,
-                'new_lname':new_lname,
-                'new_status':new_status,
-                'new_tracking':new_tracking,
-                'new_email':new_email
+                    'user_id': current_user,
+                    'new_fname':new_fname,
+                    'new_lname':new_lname,
+                    'new_status':new_status,
+                    'new_tracking':new_tracking,
+                    'new_email':new_email
                 }
             $.ajax({
                 type: "POST",
@@ -92,6 +104,15 @@ $('.delete_user').click(function(){
                             url:'/update_table/',
                             type:'POST',
                             success:function(res){
+                                $.toast({
+                                    heading: 'Success',
+                                    text: 'User has been updated successfully.',
+                                    position: 'top-left',
+                                    stack: false,
+                                    icon:'success',
+                                    textColor:'white',
+                                    showHideTransition: 'fade',
+                                })
                                 $('.ajax_table').html(res)
                             }
                         })
@@ -99,9 +120,7 @@ $('.delete_user').click(function(){
                         console.log('error')
                     }
                 }
-            });
-        }else{
-            alert('Please fill all the fields')
+            });                
         }
     })
 

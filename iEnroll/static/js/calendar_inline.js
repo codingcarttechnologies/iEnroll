@@ -46,16 +46,17 @@ $(document).ready(function() {
             // console.log('select is called..')                    
             $('.eventDetailBox').show();
             var star_date = moment(start._d).format('YYYY-MM-DD')
+            $('#datetimepicker1').datetimepicker('remove');
             $('#datetimepicker1').datetimepicker({
                 startView: 1,
                 todayBtn: true,
-                startDate: moment().format('YYYY-MM-DD')
+                startDate: star_date,
             });
-
+            $('#datetimepicker2').datetimepicker('remove');
             $('#datetimepicker2').datetimepicker({
                 startView: 1,
                 todayBtn: true,
-                startDate: moment().format('YYYY-MM-DD')
+                startDate: star_date,
             });
 
             $("#dialog").dialog({
@@ -72,11 +73,30 @@ $(document).ready(function() {
                         var startTime = $('#startTime').val();
                         var endDateTime = $('#endDateTime').val();
                         var title = $('#eventTitle').val();
+                        // console.log(moment(endDateTime).isAfter(startTime,'day'))
                         if (startTime == null || startTime == undefined || startTime == "" ||
                             endDateTime == null || endDateTime == undefined || endDateTime == "" ||
                             title == null || title == undefined || title == "") {
-                            alert('fill all details');
-                        } else {
+                            $.toast({
+                                heading: 'Error!',
+                                text: 'Please fill all the fields.',
+                                position: 'top-center',
+                                showHideTransition: 'fade',
+                                icon: 'error',
+                                textColor: 'white'
+                            }); 
+                        }
+                        else if(moment(endDateTime).isAfter(startTime,'minutes') == false){
+                            $.toast({
+                                heading: 'Error!',
+                                text: 'end date should be bigger than start date.',
+                                position: 'top-center',
+                                showHideTransition: 'fade',
+                                icon: 'error',
+                                textColor: 'white'
+                            });
+                        } 
+                        else {
                             $(this).dialog("close");
                             var eventData;
                             eventData = {
@@ -122,6 +142,7 @@ $(document).ready(function() {
         },
         timeFormat: '(h:mm)t',
         eventClick: function(event, jsEvent, view) {
+            // console.log(moment('2010-01-20 10:00').isAfter('2010-01-20 11:00', 'day'))
             $('.updateEventBox').show();
             $('#updated_startDateTime').val(event.start._i);
             $('#updated_endDateTime').val(event.end._i);
@@ -129,13 +150,13 @@ $(document).ready(function() {
             $('#updated_datetimepicker1').datetimepicker({
                 startView: 1,
                 todayBtn: true,
-                startDate: moment().format('YYYY-MM-DD')
+                startDate: moment().format('YYYY-MM-DD'),
             });
 
             $('#updated_datetimepicker2').datetimepicker({
                 startView: 1,
                 todayBtn: true,
-                startDate: moment().format('YYYY-MM-DD')
+                startDate: moment().format('YYYY-MM-DD'),
             });
             $("#eventUpdateDialog").dialog({
                 dialogClass: "no-close",
@@ -154,8 +175,27 @@ $(document).ready(function() {
                         if (start == null || start == undefined || start == "" ||
                             end == null || end == undefined || end == "" ||
                             title == null || title == undefined || title == "") {
-                            alert('fill all details');
-                        } else {
+                            $.toast({
+                                heading: 'Error!',
+                                text: 'Please fill all the fields.',
+                                position: 'top-center',
+                                showHideTransition: 'fade',
+                                icon: 'error',
+                                textColor: 'white'
+                            }) 
+                        } 
+                        else if( moment(end).isAfter(start,'minutes') == false ){
+                            // alert('end date should be bigger than start date');
+                            $.toast({
+                                heading: 'Error!',
+                                text: 'end date should be bigger than start date.',
+                                position: 'top-center',
+                                showHideTransition: 'fade',
+                                icon: 'error',
+                                textColor: 'white'
+                            }) 
+                        }
+                        else {
                             $(this).dialog("close");
                             params = {
                                 'start': start,
@@ -168,8 +208,8 @@ $(document).ready(function() {
                                 dataType: 'json',
                                 type: "POST",
                                 data: JSON.stringify(params),
-                                success: function(resp) { 
-                                    window.location.reload();                                                                                                                                                                                                                           
+                                success: function(resp) {                                    
+                                         window.location.reload()                                                                                                                                                                                                                                                                                              
                                 }
                             });
                         }
@@ -202,10 +242,30 @@ $(document).ready(function() {
                     }
                 }
             });
-        }
-
-
-
+        },
+        eventDrop:function( event, delta, revertFunc, jsEvent, ui, view ) { 
+        
+            if(confirm("Are you sure about to change ?")){
+                var start = moment(event.start._d).format('YYYY-MM-DD ')+moment(event.start._i).format('hh:mm')
+                var end = moment(event.end._d).format('YYYY-MM-DD ')+moment(event.end._i).format('hh:mm')
+                var title = event.title
+                var event_id = event._id
+                params = { 'start':start , 'end':end, 'title':title, 'event_id':event_id }
+                console.log('params',params)
+                $.ajax({
+                    url: '/update-event/',
+                    dataType: 'json',
+                    type: "POST",
+                    data: JSON.stringify(params),
+                    success: function(resp) { 
+                        window.location.reload();                                                                                                                                                                                                                           
+                    }
+                });
+            }
+            else{
+                revertFunc();
+            }
+         }   
     });
 
 });

@@ -221,12 +221,12 @@ def getChartData(request):
 		response_dict = {'category':'','count':''}
 		web_form_leads = ACME_T2D.objects.filter(lead_type="web_form").count()
 		if web_form_leads:
-			response_dict['category']='web_form'
+			response_dict['category']='web_lead'
 			response_dict['count']=web_form_leads
 			response_list.append(response_dict.copy())
 		call_leads = ACME_T2D.objects.filter(lead_type="call").count()
 		if call_leads:
-				response_dict['category']='call'
+				response_dict['category']='phone'
 				response_dict['count']=call_leads
 				response_list.append(response_dict.copy())		
 		return JsonResponse({'chartData':response_list})					
