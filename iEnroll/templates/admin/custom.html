@@ -197,10 +197,11 @@
                     <div class="form-group">
                         <label>Status</label><br>
                         <select class="selectpicker" id="edit_status">
+                          <option value="" disabled selected style="display:none;">Select Status</option> 
                           <option value="pending">Pending</option>
                           <option value="no_response">No Response</option>
-                          <option value="failed_verbal_pre_screeing">Failed Verbal Pre-Screening</option>
-                          <option value="failed_clinic_screeing">Failed Clinic Screening</option>
+                          <option value="fail_verbal_pre-screening">Failed Verbal Pre-Screening</option>
+                          <option value="fail_clinic_screening">Failed Clinic Screening</option>
                           <option value="declined">Declined</option>
                           <option value="enrolled">Enrolled</option>
                         </select>
@@ -208,6 +209,7 @@
                     <div class="form-group">
                         <label>Tracking</label><br>
                         <select class="selectpicker" id="edit_tracking">
+                          <option value="" disabled selected style="display:none;">Select Tracking</option> 
                           <option value="new_lead">New lead</option>
                           <option value="not_reached_attempt1">Not reached attempt 1</option>
                           <option value="not_reached_attempt2">Not reached attempt 2</option>

@@ -42,8 +42,7 @@ $(document).ready(function() {
         selectable: true,
         selectHelper: true,
 
-        select: function(start, end, allDay) {
-            // console.log('select is called..')                    
+        select: function(start, end, allDay) {              
             $('.eventDetailBox').show();
             var star_date = moment(start._d).format('YYYY-MM-DD')
             $('#datetimepicker1').datetimepicker('remove');
@@ -51,12 +50,17 @@ $(document).ready(function() {
                 startView: 1,
                 todayBtn: true,
                 startDate: star_date,
+                showMeridian:true,
+                format:'yyyy-mm-dd HH:ii p'
             });
             $('#datetimepicker2').datetimepicker('remove');
             $('#datetimepicker2').datetimepicker({
                 startView: 1,
                 todayBtn: true,
                 startDate: star_date,
+                showMeridian:true,
+                format:'yyyy-mm-dd HH:ii p'
+                
             });
 
             $("#dialog").dialog({
@@ -73,7 +77,8 @@ $(document).ready(function() {
                         var startTime = $('#startTime').val();
                         var endDateTime = $('#endDateTime').val();
                         var title = $('#eventTitle').val();
-                        // console.log(moment(endDateTime).isAfter(startTime,'day'))
+                        var dateEnd = new Date(endDateTime)
+                        var dateStart = new Date(startTime)
                         if (startTime == null || startTime == undefined || startTime == "" ||
                             endDateTime == null || endDateTime == undefined || endDateTime == "" ||
                             title == null || title == undefined || title == "") {
@@ -86,7 +91,7 @@ $(document).ready(function() {
                                 textColor: 'white'
                             }); 
                         }
-                        else if(moment(endDateTime).isAfter(startTime,'minutes') == false){
+                        else if(dateStart >= dateEnd){
                             $.toast({
                                 heading: 'Error!',
                                 text: 'end date should be bigger than start date.',
@@ -111,12 +116,11 @@ $(document).ready(function() {
                                 data: JSON.stringify(eventData),
                                 contentType: "application/json",
                                 success: function(res) {
-                                    eventData['_id'] = res['_id']
-                                    $('#calendar').fullCalendar('renderEvent', eventData, true);
                                     $('#startTime').val('');
                                     $('#endDateTime').val('');
                                     $('#eventTitle').val('');
-
+                                    window.location.reload();
+                                    
                                 }
                             });
                         }
@@ -142,21 +146,24 @@ $(document).ready(function() {
         },
         timeFormat: '(h:mm)t',
         eventClick: function(event, jsEvent, view) {
-            // console.log(moment('2010-01-20 10:00').isAfter('2010-01-20 11:00', 'day'))
             $('.updateEventBox').show();
-            $('#updated_startDateTime').val(event.start._i);
-            $('#updated_endDateTime').val(event.end._i);
+            $('#updated_startDateTime').val(moment(event.start._i).format('YYYY-MM-DD hh:mm a'));
+            $('#updated_endDateTime').val(moment(event.end._i).format('YYYY-MM-DD hh:mm a'));
             $('#updatedTitle').val(event.title);
             $('#updated_datetimepicker1').datetimepicker({
                 startView: 1,
                 todayBtn: true,
                 startDate: moment().format('YYYY-MM-DD'),
+                format:'yyyy-mm-dd HH:ii p',
+                showMeridian:true,
             });
 
             $('#updated_datetimepicker2').datetimepicker({
                 startView: 1,
                 todayBtn: true,
                 startDate: moment().format('YYYY-MM-DD'),
+                format:'yyyy-mm-dd HH:ii p',
+                showMeridian:true,
             });
             $("#eventUpdateDialog").dialog({
                 dialogClass: "no-close",
@@ -172,6 +179,9 @@ $(document).ready(function() {
                         var start = $('#updated_startDateTime').val();
                         var end = $('#updated_endDateTime').val();
                         var title = $('#updatedTitle').val();
+                        var updated_end_date = new Date(end)
+                        var updated_start_date = new Date(start)
+                        
                         if (start == null || start == undefined || start == "" ||
                             end == null || end == undefined || end == "" ||
                             title == null || title == undefined || title == "") {
@@ -184,8 +194,7 @@ $(document).ready(function() {
                                 textColor: 'white'
                             }) 
                         } 
-                        else if( moment(end).isAfter(start,'minutes') == false ){
-                            // alert('end date should be bigger than start date');
+                        else if(updated_start_date >= updated_end_date){
                             $.toast({
                                 heading: 'Error!',
                                 text: 'end date should be bigger than start date.',
@@ -244,10 +253,10 @@ $(document).ready(function() {
             });
         },
         eventDrop:function( event, delta, revertFunc, jsEvent, ui, view ) { 
-        
-            if(confirm("Are you sure about to change ?")){
-                var start = moment(event.start._d).format('YYYY-MM-DD ')+moment(event.start._i).format('hh:mm')
-                var end = moment(event.end._d).format('YYYY-MM-DD ')+moment(event.end._i).format('hh:mm')
+            var answer = confirm("Are you sure about to change ?")
+            if(answer){
+                var start = moment(event.start._d).format('YYYY-MM-DD ')+moment(event.start._i).format('hh:mm a')
+                var end = moment(event.end._d).format('YYYY-MM-DD ')+moment(event.end._i).format('hh:mm a')
                 var title = event.title
                 var event_id = event._id
                 params = { 'start':start , 'end':end, 'title':title, 'event_id':event_id }
@@ -265,7 +274,7 @@ $(document).ready(function() {
             else{
                 revertFunc();
             }
-         }   
+          }   
     });
 
 });

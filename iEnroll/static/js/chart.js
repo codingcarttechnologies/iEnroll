@@ -7,7 +7,6 @@ window.onload = function () {
                 y: value['count']
             });
         });
-  
     var chart = new CanvasJS.Chart("chartContainer",
     {
       title:{
@@ -18,13 +17,17 @@ window.onload = function () {
         title: "Number of leads"
       },
       axisX: {
-        title: "Category"
+        title: "Category",
+        labelFontSize: 8,
+        labelFontColor:'black',
+        labelFontWeight : 'bolder',
+          labelFontFamily:'Arial Black'
       },
-      theme: "theme2",
+      theme: "theme1",
       dataPointMaxWidth: 30,
       data: [
 
-          {        
+          {  
             type: "column",  
             dataPoints : chart_data
            }   

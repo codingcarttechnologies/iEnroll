@@ -129,12 +129,11 @@ class ACME_T2D(models.Model):
     notes = models.TextField(max_length=512, blank=True, null=True)
     reviewed = models.BooleanField(default=False)
     status = models.CharField(max_length=25, default='pending',
-                              choices=(('pending_customer', 'Pending Customer Review'),
-                                       ('screened_ienroll', 'Screened by iEnroll'),
-                                       ('fail_ienroll', 'Failed iEnroll Screen'),
-                                       ('fail_client',  'Fail Client Screen'),
-                                       ('too_far', 'Not Interested, Too Far'),
-                                       ('placebo', 'Not Intereseted, Placebo'),
+                              choices=(('pending', 'Pending'),
+                                       ('no_response', 'No Response'),
+                                       ('fail_verbal_pre-screening', 'Failed Verbal Pre-Screening'),
+                                       ('fail_clinic_screening',  'Failed Clinic Screening'),
+                                       ('declined', 'Declined'),
                                        ('enrolled', 'Enrolled')))
     tracking = models.CharField(max_length=25, default='new_lead',
                               choices=(('new_lead', 'New lead'),

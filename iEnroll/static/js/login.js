@@ -10,7 +10,6 @@ $(document).ready(function(){
                 'username': username,
                 'password': password,
                 }
-            console.log('params',params)
              $.ajax({
                 type: "POST",
                 url: "/authenticateUser/",

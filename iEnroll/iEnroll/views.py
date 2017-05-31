@@ -35,7 +35,6 @@ def authenticateUser(request):
 		data_dict = json.loads(request.body)
 		username = data_dict['username']
 		password = data_dict['password']
-		print 'user',username,password
 		user=User.objects.filter(username=username)
 		for us in user:
 			user_password=us.password
@@ -116,7 +115,6 @@ def deleteUser(request):
 def updateUser(request):	
 	try:
 		data_dict = json.loads(request.body)
-		print 'data_dict',data_dict
 		user_id = data_dict['user_id']
 		ACME_T2D.objects.filter(id=user_id).update(fname = data_dict['new_fname'],lname = data_dict['new_lname'],
 			status =data_dict['new_status'],tracking=data_dict['new_tracking'],contact_email=data_dict['new_email'])
@@ -152,11 +150,11 @@ def creatEvent(request):
 	try:
 		if request.method == 'POST':
 			data_dict = json.loads(request.body)
-			print 'data_dict',data_dict
+			start = datetime.datetime.strptime(data_dict['start'], '%Y-%m-%d %I:%M %p')
+			end = datetime.datetime.strptime(data_dict['end'], '%Y-%m-%d %I:%M %p')
 			usr_evnt_obj = UserEvents.objects.create(title=data_dict['title'],
-			start_date=data_dict['start'],end_date=data_dict['end'],
+			start_date=start,end_date=end,
 			user=request.user)
-			print 'usr_evnt_obj',usr_evnt_obj
 			usr_evnt_obj.save()
 			return JsonResponse({'_id':usr_evnt_obj.id})
 	except Exception as e:
@@ -188,9 +186,8 @@ def updateEvent(request):
 	try:
 		if request.method == 'POST':
 			data_dict = json.loads(request.body)
-			print 'data_dict',data_dict
-			start = data_dict['start']
-			end = data_dict['end']
+			start = datetime.datetime.strptime(data_dict['start'], '%Y-%m-%d %I:%M %p')
+			end = datetime.datetime.strptime(data_dict['end'], '%Y-%m-%d %I:%M %p')
 			title = data_dict['title']
 			event_id = data_dict['event_id']
 			UserEvents.objects.filter(pk=event_id).filter(user=request.user).update(title=title,
@@ -219,16 +216,36 @@ def getChartData(request):
 	try:
 		response_list =[]
 		response_dict = {'category':'','count':''}
-		web_form_leads = ACME_T2D.objects.filter(lead_type="web_form").count()
-		if web_form_leads:
-			response_dict['category']='web_lead'
-			response_dict['count']=web_form_leads
-			response_list.append(response_dict.copy())
-		call_leads = ACME_T2D.objects.filter(lead_type="call").count()
-		if call_leads:
-				response_dict['category']='phone'
-				response_dict['count']=call_leads
-				response_list.append(response_dict.copy())		
+		pending_leads = ACME_T2D.objects.filter(status="pending").count()
+		noresponse_leads = ACME_T2D.objects.filter(status="no_response").count()
+		fail_verbal_leads = ACME_T2D.objects.filter(status="fail_verbal_pre-screening").count()
+		fail_clinic_leads = ACME_T2D.objects.filter(status="fail_clinic_screening").count()
+		declined_leads = ACME_T2D.objects.filter(status="declined").count()
+		enrolled_leads = ACME_T2D.objects.filter(status="enrolled").count()
+		if noresponse_leads:
+				response_dict['category']='No Response'
+				response_dict['count']=noresponse_leads
+				response_list.append(response_dict.copy())
+		if pending_leads:
+			response_dict['category']='Pending'
+			response_dict['count']=pending_leads
+			response_list.append(response_dict.copy())		
+		if fail_verbal_leads:
+				response_dict['category']='Failed Verbal'
+				response_dict['count']=fail_verbal_leads
+				response_list.append(response_dict.copy())
+		if declined_leads:
+				response_dict['category']='Declined'
+				response_dict['count']=declined_leads
+				response_list.append(response_dict.copy())
+		if enrolled_leads:
+				response_dict['category']='Enrolled'
+				response_dict['count']=enrolled_leads
+				response_list.append(response_dict.copy())
+		if fail_clinic_leads:
+				response_dict['category']='Failed Clinic'
+				response_dict['count']=fail_clinic_leads
+				response_list.append(response_dict.copy())												
 		return JsonResponse({'chartData':response_list})					
 	except Exception as e:
 		print 'error',e				
